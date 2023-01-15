@@ -1,0 +1,25 @@
+server:
+  port: 8002
+
+
+
+spring:
+  application:
+    name: cloud-app
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 8.130.15.86:8848
+        username: nacos
+        password: nacos
+
+
+
+#配置plus打印sql日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+

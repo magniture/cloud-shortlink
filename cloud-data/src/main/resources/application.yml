@@ -1,0 +1,30 @@
+server:
+  port: 8003
+
+
+
+spring:
+  application:
+    name: cloud-data
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 8.130.15.86:8848
+        username: nacos
+        password: nacos
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://8.130.15.86:3306/dcloud_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: xdclass.net168
+
+
+#配置plus打印sql日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+
