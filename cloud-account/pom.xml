@@ -17,7 +17,11 @@
     </properties>
 
     <dependencies>
-
+        <!-- OSS各个项⽬单独加依赖，根据需要进⾏添加-->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.zq</groupId>
             <artifactId>cloud-common</artifactId>

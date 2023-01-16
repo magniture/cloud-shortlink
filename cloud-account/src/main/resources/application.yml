@@ -26,8 +26,30 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-
+  redis:
+    client-type: jedis
+    host: 8.130.15.86
+    password: xdclass.net
+    port: 6379
+    jedis:
+      pool:
+        # 连接池最⼤连接数（使⽤负值表示没有限制）
+        max-active: 100
+        # 连接池中的最⼤空闲连接
+        max-idle: 100
+        # 连接池中的最⼩空闲连接
+        min-idle: 100
+        # 连接池最⼤阻塞等待时间（使⽤负值表示没有限制）
+        max-wait: 60000
 
 sms:
   app-code: c170c9f6195044d7b55ec1c7db751b79
   template-id: M105EABDEC
+
+#----------阿里云OSS配置--------------
+aliyun:
+  oss:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    access-key-id: LTAI5tPpFiMRHgFpAHGvesXj
+    access-key-secret: DR9GD63BWIhRnU4YV6oTECpkXemD9B
+    bucketname: comzq
