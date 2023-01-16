@@ -12,5 +12,6 @@ import com.zq.model.AccountDO;
  * @since 2023-01-15
  */
 public interface AccountManager  {
+    int insert(AccountDO accountDO);
 
 }
