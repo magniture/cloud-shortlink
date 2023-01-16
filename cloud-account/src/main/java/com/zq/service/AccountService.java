@@ -1,5 +1,6 @@
 package com.zq.service;
 
+import com.zq.controller.request.AccountLoginRequest;
 import com.zq.controller.request.AccountRegisterRequest;
 import com.zq.model.AccountDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -20,4 +21,11 @@ public interface AccountService extends IService<AccountDO> {
      * @return
      */
     JsonData register(AccountRegisterRequest registerRequest);
+
+    /**
+     * 登录
+     * @param request
+     * @return
+     */
+    JsonData login(AccountLoginRequest request);
 }

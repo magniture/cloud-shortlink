@@ -1,5 +1,6 @@
 package com.zq.service.impl;
 
+import com.zq.controller.request.AccountLoginRequest;
 import com.zq.controller.request.AccountRegisterRequest;
 import com.zq.enums.AuthTypeEnum;
 import com.zq.enums.BizCodeEnum;
@@ -7,10 +8,12 @@ import com.zq.enums.SendCodeEnum;
 import com.zq.manager.AccountManager;
 import com.zq.model.AccountDO;
 import com.zq.mapper.AccountMapper;
+import com.zq.model.LoginUser;
 import com.zq.service.AccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zq.service.NotifyService;
 import com.zq.utils.CommonUtil;
+import com.zq.utils.JWTUtil;
 import com.zq.utils.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Md5Crypt;
@@ -18,6 +21,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -51,7 +56,6 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountDO> im
     @Override
     public JsonData register(AccountRegisterRequest registerRequest) {
 
-
         boolean checkCode =false;
         //判断验证码
         if(StringUtils.isNotBlank(registerRequest.getPhone())){
@@ -66,22 +70,67 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountDO> im
 
 
         AccountDO accountDO = new AccountDO();
+
         BeanUtils.copyProperties(registerRequest,accountDO);
         //认证级别
         accountDO.setAuth(AuthTypeEnum.DEFAULT.name());
 
+
+        //生成唯一的账号  TODO
+        accountDO.setAccountNo(CommonUtil.getCurrentTimestamp());
+
         //设置密码 秘钥 盐
-        accountDO.setSecret("$1$"+ CommonUtil.getStringNumRandom(8));
+        accountDO.setSecret("$1$"+CommonUtil.getStringNumRandom(8));
         String cryptPwd = Md5Crypt.md5Crypt(registerRequest.getPwd().getBytes(),accountDO.getSecret());
         accountDO.setPwd(cryptPwd);
 
         int rows = accountManager.insert(accountDO);
         log.info("rows:{},注册成功:{}",rows,accountDO);
 
-        //用户注册成功，发放福利
+        //用户注册成功，发放福利 TODO
         userRegisterInitTask(accountDO);
 
         return JsonData.buildSuccess();
+
+    }
+
+
+    /**
+     * 1、根据手机号去找
+     * 2、有的话，则用秘钥+用户传递的明文密码，进行加密，再和数据库的密文进行匹配
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public JsonData login(AccountLoginRequest request) {
+
+        List<AccountDO> accountDOList = accountManager.findByPhone(request.getPhone());
+
+        if(accountDOList!=null && accountDOList.size() ==1){
+
+            AccountDO accountDO = accountDOList.get(0);
+
+            String md5Crypt = Md5Crypt.md5Crypt(request.getPwd().getBytes(), accountDO.getSecret());
+            if(md5Crypt.equalsIgnoreCase(accountDO.getPwd())){
+
+                LoginUser loginUser = LoginUser.builder().build();
+                BeanUtils.copyProperties(accountDO,loginUser);
+
+
+                String token = JWTUtil.geneJsonWebTokne(loginUser);
+
+                return JsonData.buildSuccess(token);
+
+            }else {
+                return JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
+            }
+
+
+        }else {
+            return JsonData.buildResult(BizCodeEnum.ACCOUNT_UNREGISTER);
+        }
+
 
     }
 

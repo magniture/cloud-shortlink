@@ -1,5 +1,6 @@
 package com.zq.manager.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zq.manager.AccountManager;
 import com.zq.mapper.AccountMapper;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -27,5 +30,14 @@ public class AccountManagerImpl implements AccountManager {
     @Override
     public int insert(AccountDO accountDO) {
         return accountMapper.insert(accountDO);
+    }
+
+    @Override
+    public List<AccountDO> findByPhone(String phone) {
+
+        List<AccountDO> accountDOList = accountMapper
+                .selectList(new QueryWrapper<AccountDO>().eq("phone", phone));
+
+        return accountDOList;
     }
 }

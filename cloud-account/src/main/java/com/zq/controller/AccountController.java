@@ -1,6 +1,7 @@
 package com.zq.controller;
 
 
+import com.zq.controller.request.AccountLoginRequest;
 import com.zq.controller.request.AccountRegisterRequest;
 import com.zq.enums.BizCodeEnum;
 import com.zq.service.AccountService;
@@ -62,6 +63,16 @@ public class AccountController {
         return jsonData;
     }
 
+    /**
+     * 用户登录
+     * @param request
+     * @return
+     */
+    @PostMapping("login")
+    public JsonData login(@RequestBody AccountLoginRequest request){
 
+        JsonData jsonData = accountService.login(request);
+        return jsonData;
+    }
 }
 
