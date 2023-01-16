@@ -50,6 +50,10 @@ public class AccountController {
      * 用户注册
      * @param registerRequest
      * @return
+     * 核⼼逻辑
+     * 通过phone找数据库记录
+     * 获取盐，和当前传递的密码就⾏加密后匹配
+     * ⽣成token令牌
      */
     @PostMapping("register")
     public JsonData register(@RequestBody AccountRegisterRequest registerRequest){
@@ -57,6 +61,7 @@ public class AccountController {
         JsonData jsonData = accountService.register(registerRequest);
         return jsonData;
     }
+
 
 }
 
