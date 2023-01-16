@@ -57,7 +57,6 @@ public class NotifyServiceImpl implements NotifyService {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-
     @Override
     public JsonData sendCode(SendCodeEnum sendCodeEnum, String to) {
 
@@ -79,7 +78,7 @@ public class NotifyServiceImpl implements NotifyService {
         String code = CommonUtil.getRandomCode(6);
         //生成拼接好验证码
         String value = code+"_"+CommonUtil.getCurrentTimestamp();
-        redisTemplate.opsForValue().set(cacheKey,value,CODE_EXPIRED, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(cacheKey,value,CODE_EXPIRED,TimeUnit.MILLISECONDS);
 
         if(CheckUtil.isEmail(to)){
             //发送邮箱验证码  TODO

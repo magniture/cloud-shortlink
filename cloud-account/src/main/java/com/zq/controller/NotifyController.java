@@ -51,77 +51,56 @@ public class NotifyController {
     /**
      * 验证码过期时间
      */
-    private static final long CAPTCHA_CODE_EXPIRED = 1000 * 10 *  60;
+    private static final long CAPTCHA_CODE_EXPIRED = 1000 * 10 * 60;
 
-    /**
-     * 上传⽤户头像
-     *
-     * 默认⽂件⼤⼩ 1M,超过会报错
-     *
-     * @param file
-     * @return
-     */
-    @PostMapping(value = "upload")
-    public JsonData
-    uploadHeaderImg(@RequestPart("file") MultipartFile
-                            file) {
-
-        String result =
-                fileService.uploadUserImg(file);
-
-        return result != null ?
-                JsonData.buildSuccess(result) : JsonData.buildResult(BizCodeEnum.FILE_UPLOAD_USER_IMG_FAIL);
-    }
     /**
      * 生成验证码
+     *
      * @param request
      * @param response
      */
     @GetMapping("captcha")
-    public void getCaptcha(HttpServletRequest request, HttpServletResponse response){
+    public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
 
 
         String captchaText = captchaProducer.createText();
-        log.info("验证码内容:{}",captchaText);
+        log.info("验证码内容:{}", captchaText);
 
         //存储redis,配置过期时间 ， jedis/lettuce
-        redisTemplate.opsForValue().set(getCaptchaKey(request),captchaText,CAPTCHA_CODE_EXPIRED, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(getCaptchaKey(request), captchaText, CAPTCHA_CODE_EXPIRED, TimeUnit.MILLISECONDS);
 
 
         BufferedImage bufferedImage = captchaProducer.createImage(captchaText);
 
-        try (ServletOutputStream outputStream = response.getOutputStream()){
+        try (ServletOutputStream outputStream = response.getOutputStream()) {
 
-            ImageIO.write(bufferedImage,"jpg",outputStream);
+            ImageIO.write(bufferedImage, "jpg", outputStream);
             outputStream.flush();
 
         } catch (IOException e) {
-            log.error("获取流出错:{}",e.getMessage());
+            log.error("获取流出错:{}", e.getMessage());
         }
 
     }
 
 
-
-    private String getCaptchaKey(HttpServletRequest request){
+    private String getCaptchaKey(HttpServletRequest request) {
 
         String ip = CommonUtil.getIpAddr(request);
         String userAgent = request.getHeader("User-Agent");
-        String key = "account-service:captcha:"+CommonUtil.MD5(ip+userAgent);
-        log.info("验证码key:{}",key);
+        String key = "account-service:captcha:" + CommonUtil.MD5(ip + userAgent);
+        log.info("验证码key:{}", key);
         return key;
     }
 
 
-
-
-
     /**
      * 发送短信验证码
+     *
      * @return
      */
     @PostMapping("send_code")
-    public JsonData sendCode(@RequestBody SendCodeRequest sendCodeRequest, HttpServletRequest request){
+    public JsonData sendCode(@RequestBody SendCodeRequest sendCodeRequest, HttpServletRequest request) {
 
         String key = getCaptchaKey(request);
 
@@ -129,23 +108,15 @@ public class NotifyController {
 
         String captcha = sendCodeRequest.getCaptcha();
 
-        if(captcha!=null && cacheCaptcha !=null && cacheCaptcha.equalsIgnoreCase(captcha)){
+        if (captcha != null && cacheCaptcha != null && cacheCaptcha.equalsIgnoreCase(captcha)) {
             //成功
             redisTemplate.delete(key);
-            JsonData jsonData = notifyService.sendCode(SendCodeEnum.USER_REGISTER,sendCodeRequest.getTo());
-            return jsonData;
-        }else {
+            return notifyService.sendCode(SendCodeEnum.USER_REGISTER, sendCodeRequest.getTo());
+        } else {
             return JsonData.buildResult(BizCodeEnum.CODE_CAPTCHA_ERROR);
         }
 
 
-
-
     }
-
-
-
-
-
 }
 

@@ -51,6 +51,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, AccountDO> im
     @Override
     public JsonData register(AccountRegisterRequest registerRequest) {
 
+
         boolean checkCode =false;
         //判断验证码
         if(StringUtils.isNotBlank(registerRequest.getPhone())){
